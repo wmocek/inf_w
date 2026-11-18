@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sprawdzian z informatyki – klasa 5 – Wyszukiwanie w Google</title>
+<style>
+  :root{
+    --blue:#1a73e8; --red:#d93025; --yellow:#f9ab00; --green:#188038;
+    --ink:#202124; --muted:#5f6368; --line:#dadce0; --bg:#f6f8fc; --card:#fff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.5;font-size:17px}
+  header{background:#fff;border-bottom:1px solid var(--line)}
+  header .stripe{height:6px;background:linear-gradient(90deg,var(--blue) 0 25%,var(--red) 25% 50%,var(--yellow) 50% 75%,var(--green) 75% 100%)}
+  header .in{max-width:860px;margin:0 auto;padding:22px 18px 18px}
+  h1{margin:0 0 4px;font-size:1.65rem;line-height:1.2}
+  header p{margin:0;color:var(--muted)}
+  main{max-width:860px;margin:0 auto;padding:18px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-bottom:16px}
+  .info{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px}
+  .info label{display:block;font-size:.85rem;color:var(--muted);margin-bottom:3px}
+  input[type=text],textarea,select{font:inherit;padding:8px 10px;border:1px solid #bdc1c6;border-radius:8px;background:#fff;width:100%}
+  textarea{min-height:90px;resize:vertical}
+  select{width:auto;max-width:100%}
+  .rules ul{margin:6px 0 0;padding-left:20px}
+  .q{position:relative}
+  .q h2{font-size:1.05rem;margin:0 0 10px;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+  .q h2 .n{background:var(--blue);color:#fff;border-radius:999px;padding:1px 12px;font-size:.9rem;white-space:nowrap}
+  .q h2 .pts{margin-left:auto;font-size:.85rem;font-weight:500;color:var(--muted);white-space:nowrap}
+  .q .text{margin:0 0 10px}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#eef1f6;border-radius:5px;padding:1px 6px;font-size:.95em;word-break:break-word}
+  .opts{display:grid;gap:8px}
+  .opt{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:10px;padding:9px 12px;cursor:pointer}
+  .opt:hover{background:#f1f5fd}
+  .opt input{margin-top:6px;flex:none}
+  .opt .l{font-weight:700;color:var(--blue);flex:none}
+  .row{display:flex;gap:12px;align-items:center;justify-content:space-between;border-bottom:1px dashed var(--line);padding:8px 0;flex-wrap:wrap}
+  .row:last-child{border-bottom:0}
+  .row .lt{flex:1 1 280px}
+  .tf label{margin-right:14px;white-space:nowrap;cursor:pointer}
+  .fillline{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .fillline input[type=text]{width:220px}
+  .fb{display:none;margin-top:12px;padding:10px 14px;border-radius:10px;font-size:.95rem}
+  .done .fb{display:block}
+  .ok{border-color:#a8dab5}.ok .fb{background:#e6f4ea}
+  .part{border-color:#fde293}.part .fb{background:#fef7e0}
+  .bad{border-color:#f5b4ae}.bad .fb{background:#fce8e6}
+  .opt.correct{background:#e6f4ea;border-color:#a8dab5}
+  .opt.wrong{background:#fce8e6;border-color:#f5b4ae}
+  .mark-ok{outline:2px solid #a8dab5;border-radius:8px}
+  .mark-bad{outline:2px solid #f5b4ae;border-radius:8px}
+  .bar{position:sticky;bottom:0;background:rgba(246,248,252,.96);border-top:1px solid var(--line);padding:12px 18px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  button{font:inherit;font-weight:600;border:0;border-radius:999px;padding:10px 22px;cursor:pointer;background:var(--blue);color:#fff}
+  button.sec{background:#fff;color:var(--blue);border:1px solid var(--line)}
+  button:hover{filter:brightness(.95)}
+  #result{display:none;text-align:center;border:2px solid var(--blue)}
+  #result .grade{font-size:3rem;font-weight:800;color:var(--blue);line-height:1.1}
+  #result .big{font-size:1.25rem;font-weight:700}
+  .small{color:var(--muted);font-size:.9rem}
+  footer{text-align:center;color:var(--muted);font-size:.85rem;padding:10px 18px 30px}
+  @media (max-width:640px){.info{grid-template-columns:1fr}.q h2 .pts{margin-left:0}}
+  @media print{
+    body{background:#fff;font-size:12pt}
+    .bar,.noprint{display:none!important}
+    .card{break-inside:avoid;border-color:#999}
+    header .stripe{display:none}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="stripe"></div>
+  <div class="in">
+    <h1>Sprawdzian z informatyki – klasa 5</h1>
+    <p>Temat: Wyszukiwanie informacji w internecie (Google) – różne sposoby</p>
+  </div>
+</header>
+
+<main>
+  <section class="card info">
+    <div><label for="imie">Imię i nazwisko</label><input type="text" id="imie" autocomplete="off"></div>
+    <div><label for="klasa">Klasa</label><input type="text" id="klasa" value="5" autocomplete="off"></div>
+    <div><label for="data">Data</label><input type="text" id="data" autocomplete="off"></div>
+  </section>
+
+  <section class="card rules">
+    <strong>Zasady</strong>
+    <ul>
+      <li>Przeczytaj uważnie każde zadanie. W zadaniach jednokrotnego wyboru jedna odpowiedź jest poprawna.</li>
+      <li>W zadaniu z kluczem „zaznacz wszystkie” poprawnych odpowiedzi może być kilka.</li>
+      <li>Na końcu kliknij <b>Sprawdź sprawdzian</b>. Zobaczysz punkty, ocenę i wyjaśnienia.</li>
+      <li>Zadanie dodatkowe na końcu nie jest liczone automatycznie – sprawdza je nauczyciel.</li>
+    </ul>
+  </section>
+
+  <section class="card" id="result" aria-live="polite"></section>
+
+  <form id="test" onsubmit="return false"></form>
+</main>
+
+<div class="bar">
+  <button id="btnCheck">Sprawdź sprawdzian</button>
+  <button id="btnReset" class="sec">Zacznij od nowa</button>
+  <button id="btnPrint" class="sec">Drukuj / zapisz PDF</button>
+</div>
+<footer>Sprawdzian z informatyki, klasa 5 · Wyszukiwanie w Google</footer>
+
+<script>
+/* ===== USTAWIENIA ===== */
+// progi oceny w procentach (dolna granica): zmień, jeśli używasz innej skali
+const SKALA = [
+  {min:100, ocena:6, nazwa:'celujący'},
+  {min:90,  ocena:5, nazwa:'bardzo dobry'},
+  {min:75,  ocena:4, nazwa:'dobry'},
+  {min:50,  ocena:3, nazwa:'dostateczny'},
+  {min:30,  ocena:2, nazwa:'dopuszczający'},
+  {min:0,   ocena:1, nazwa:'niedostateczny'}
+];
+
+/* ===== ZADANIA ===== */
+const Q = [
+  {t:'choice', q:'Chcesz znaleźć dokładnie frazę „kot w butach” (słowa w tej samej kolejności, obok siebie). Który zapis wpiszesz w Google?',
+   opts:['`kot w butach`','`"kot w butach"`','`-kot w butach`','`site:kot w butach`'], a:1,
+   why:'Cudzysłów mówi wyszukiwarce: szukaj dokładnie tej frazy, a nie tylko pojedynczych słów.'},
+
+  {t:'choice', q:'Wpisujesz: `jaguar -samochód`. Co zrobi znak minus?',
+   opts:['Wyszuka tylko strony o samochodach','Pominie wyniki, w których jest słowo „samochód”','Odejmie od siebie dwie liczby','Wyszuka słowo „jaguar” w innym języku'], a:1,
+   why:'Minus tuż przed słowem (bez spacji) wyklucza je z wyników. Tu dostaniesz zwierzę, a nie auto.'},
+
+  {t:'choice', q:'Co wpiszesz, żeby szukać słowa „Wisła” tylko na stronie pl.wikipedia.org?',
+   opts:['`Wisła pl.wikipedia.org -site`','`site:pl.wikipedia.org Wisła`','`only pl.wikipedia.org Wisła`','`Wisła "stronie" pl.wikipedia.org`'], a:1,
+   why:'Operator `site:` ogranicza wyszukiwanie do jednej strony. Po dwukropku nie ma spacji.'},
+
+  {t:'choice', q:'Co zrobi dopisanie `filetype:pdf` do hasła „tabliczka mnożenia”?',
+   opts:['Pokaże tylko pliki w formacie PDF','Zablokuje pliki PDF','Pokaże tylko filmy','Pobierze od razu wszystkie wyniki na komputer'], a:0,
+   why:'`filetype:` pozwala wybrać rodzaj pliku, np. PDF (dokumenty), DOCX (Word) lub PPTX (prezentacje).'},
+
+  {t:'match', q:'Połącz kartę w Google z tym, co ona pokazuje.',
+   pairs:[['Grafika','zdjęcia, rysunki i inne obrazy'],
+          ['Wiadomości','aktualne artykuły z portali i gazet'],
+          ['Mapy','plan okolicy, miejsca i trasy dojazdu'],
+          ['Filmy','nagrania wideo']]},
+
+  {t:'match', q:'Google potrafi więcej niż tylko szukać stron. Co pokaże, gdy wpiszesz:',
+   pairs:[['`pogoda Gliwice`','prognozę pogody'],
+          ['`5 km na mile`','przeliczenie jednostek'],
+          ['`12*7`','wynik działania (kalkulator)'],
+          ['`dom po angielsku`','tłumaczenie słowa']]},
+
+  {t:'tf', q:'Zdecyduj, czy zdanie jest prawdziwe (P), czy fałszywe (F).',
+   items:[
+    ['Wyniki oznaczone „Sponsorowane” lub „Reklama” są reklamami.',true],
+    ['Pierwszy wynik na liście jest zawsze najlepszy i najbardziej prawdziwy.',false],
+    ['Możesz szukać, mówiąc do telefonu (wyszukiwanie głosowe).',true],
+    ['Google zrozumie zapytanie tylko wtedy, gdy wpiszesz całe zdanie z kropką na końcu.',false],
+    ['Wielkie i małe litery prawie nie mają znaczenia – „Kraków” i „kraków” dadzą podobne wyniki.',true]
+   ],
+   why:'Reklamy są oznaczone. Kolejność wyników nie gwarantuje prawdy, więc porównuj kilka źródeł. Wystarczą słowa kluczowe, a wielkość liter nie ma znaczenia.'},
+
+  {t:'choice', q:'Zrobiłeś zdjęcie nieznanej rośliny i chcesz wiedzieć, jak się nazywa. Co najlepiej zrobić?',
+   opts:['Wpisać w Google samo słowo „roślina”','Użyć wyszukiwania obrazem (np. Google Lens) i wgrać zdjęcie','Poczekać, aż Google samo zgadnie','Wysłać zdjęcie nieznajomej osobie w internecie'], a:1,
+   why:'Wyszukiwanie obrazem porównuje zdjęcie z milionami innych i podpowiada, co na nim jest. Zdjęć nie wysyłamy nieznajomym.'},
+
+  {t:'order', q:'Ułóż w kolejności kroki dobrego szukania informacji. Wpisz numery od 1 do 4.',
+   steps:['Zastanów się, czego dokładnie szukasz, i wybierz słowa kluczowe.',
+          'Wpisz słowa kluczowe w pasku wyszukiwania.',
+          'Przejrzyj kilka wyników, nie tylko pierwszy.',
+          'Sprawdź w drugim źródle, czy informacja się zgadza.']},
+
+  {t:'choice', q:'Chcesz wiedzieć, ile metrów wysokości ma Giewont. Które zapytanie będzie najlepsze?',
+   opts:['`Giewont`','`góry`','`wysokość Giewont`','`Czy mógłbyś mi, proszę, powiedzieć, ile mniej więcej ma ten Giewont?`'], a:2,
+   why:'Najlepsze są krótkie, konkretne słowa kluczowe: o co pytasz (wysokość) i czego dotyczy (Giewont).'},
+
+  {t:'fill', q:'Najważniejsze słowa, które wpisujemy do wyszukiwarki, nazywamy słowami',
+   accept:['kluczowymi','kluczowe'], after:'(wpisz jedno słowo)',
+   why:'Słowa kluczowe to te, które najlepiej opisują, czego szukasz.'},
+
+  {t:'choice', q:'Szukasz informacji o planetach do referatu. Które źródło jest najbardziej wiarygodne?',
+   opts:['Anonimowy wpis na forum','Film z krzykliwym tytułem „SZOK! Nie uwierzysz!”','Strona agencji kosmicznej (np. NASA) lub encyklopedii','Reklama sklepu z teleskopami'], a:2,
+   why:'Wiarygodne są strony instytucji, naukowców i encyklopedii, na których widać autora lub wydawcę. Reklamy i anonimowe wpisy mogą się mylić.'},
+
+  {t:'choice', q:'Przed adresem strony widzisz kłódkę i `https`. Co to oznacza?',
+   opts:['Strona na pewno zawiera same prawdziwe informacje','Połączenie ze stroną jest szyfrowane, ale treść nadal trzeba sprawdzić','Strona jest przeznaczona dla dzieci','Strona jest darmowa'], a:1,
+   why:'Kłódka chroni przesyłane dane, ale nie mówi nic o prawdziwości treści.'},
+
+  {t:'choice', q:'Co oznacza zapis `pizza OR makaron` (OR pisane wielkimi literami)?',
+   opts:['Tylko strony, na których są obie rzeczy naraz','Wyniki ze słowem „pizza” albo ze słowem „makaron”','Wyniki ze słowem „pizza”, ale bez słowa „makaron”','Wyszuka dokładnie słowo „OR”'], a:1,
+   why:'`OR` znaczy „lub”. Dobry sposób, gdy interesuje cię jedno z dwóch słów.'},
+
+  {t:'match', q:'Operatory logiczne. Połącz zapis z tym, co oznacza.',
+   pairs:[['`AND`','i – w wynikach muszą być oba słowa'],
+          ['`OR`','lub – wystarczy jedno z dwóch słów'],
+          ['`NOT` (w Google: znak `-`)','nie – wyklucza słowo z wyników'],
+          ['`*` (gwiazdka)','zastępuje jedno nieznane słowo']],
+   why:'W Google spacja między słowami działa jak AND, a NOT zastępuje minus. `OR` i gwiazdka działają tak samo jak w opisie. W bibliotekach i bazach danych często wpisuje się AND, OR i NOT wprost.'},
+
+  {t:'choice', q:'Co znajdziesz, wpisując `pizza AND makaron`?',
+   opts:['Strony, na których są oba słowa: „pizza” i „makaron”','Strony z którymś z tych słów, ale nie z obydwoma','Strony ze słowem „pizza”, ale bez słowa „makaron”','Tylko strony po angielsku'], a:0,
+   why:'`AND` znaczy „i”. W Google nie trzeba go pisać – zwykła spacja robi to samo.'},
+
+  {t:'choice', q:'Chcesz znaleźć strony o psach, ale bez owczarków. Który zapis zadziała w Google?',
+   opts:['`psy +owczarek`','`psy OR owczarek`','`psy -owczarek`','`psy AND owczarek`'], a:2,
+   why:'Wykluczenie słowa to minus tuż przed nim. Operator NOT z innych wyszukiwarek odpowiada w Google właśnie minusowi.'},
+
+  {t:'choice', q:'Co znajdziesz, wpisując `(kot OR pies) zdjęcia`?',
+   opts:['Tylko zdjęcia kotów','Zdjęcia kota albo psa','Zdjęcia kota i psa na jednym obrazku','Wszystko oprócz zdjęć'], a:1,
+   why:'Nawiasy grupują: najpierw „kot lub pies”, a potem do tego słowo „zdjęcia”.'},
+
+  {t:'choice', q:'Chcesz znaleźć tylko najnowsze informacje z ostatnich 24 godzin. Co zrobisz?',
+   opts:['Dopiszesz do hasła `filetype:pdf`','Wybierzesz kartę „Mapy”','W „Narzędziach” wybierzesz filtr czasu (np. ostatnie 24 godziny)','Napiszesz hasło wielkimi literami'], a:2,
+   why:'Filtr czasu w „Narzędziach” pozwala ograniczyć wyniki do ostatniej godziny, doby, tygodnia lub roku.'},
+
+  {t:'choice', q:'Strona, którą znalazłeś w Google, prosi o podanie hasła i numeru karty rodziców, żeby obejrzeć film. Co robisz?',
+   opts:['Wpisuję dane – to tylko na chwilę','Zamykam stronę i mówię o tym rodzicom lub nauczycielowi','Podaję tylko hasło, bez numeru karty','Wysyłam link kolegom'], a:1,
+   why:'Nigdy nie podajemy haseł ani danych płatniczych na nieznanych stronach. To może być oszustwo.'},
+
+  {t:'multi', q:'Zaznacz WSZYSTKIE poprawnie zapisane zapytania.',
+   opts:[['`jaguar -samochód`',true],
+         ['`"najwyższa góra w Polsce"`',true],
+         ['`filetype:pdf tabliczka mnożenia`',true],
+         ['`site wikipedia.org Wisła`',false],
+         ['`filetype pdf lektury`',false]],
+   why:'Operatory `site:` i `filetype:` muszą mieć dwukropek. Bez niego Google szuka zwykłych słów.'},
+
+  {t:'open', q:'Zadanie dodatkowe (sprawdza nauczyciel). Chcesz znaleźć prezentację PowerPoint o Układzie Słonecznym tylko na stronach z końcówką .edu.pl. Napisz, co wpiszesz w Google, i wyjaśnij jednym zdaniem, jak to działa.',
+   model:'Przykład: `Układ Słoneczny filetype:pptx site:edu.pl`. Operator `filetype:pptx` ogranicza wyniki do prezentacji, a `site:edu.pl` do stron z końcówką edu.pl.'}
+];
+
+/* ===== NARZĘDZIA ===== */
+const esc = s => s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt = s => esc(s).replace(/`([^`]+)`/g, '<code>$1</code>');
+const shuffle = a => { const b=a.slice(); for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];} return b; };
+const norm = s => s.toLowerCase().trim().replace(/[.,!?"„”]/g,'').normalize('NFD').replace(/[̀-ͯ]/g,'');
+const L = 'ABCDEFGH';
+
+/* ===== BUDOWNICZOWIE ZADAŃ ===== */
+const B = {
+  choice:{
+    max:q=>1,
+    html(q,i){
+      const order = shuffle(q.opts.map((_,k)=>k));
+      return `<div class="opts">` + order.map((k,pos)=>
+        `<label class="opt" data-k="${k}"><input type="radio" name="q${i}" value="${k}"><span class="l">${L[pos]}</span><span>${fmt(q.opts[k])}</span></label>`
+      ).join('') + `</div>`;
+    },
+    grade(q,root){
+      const c = root.querySelector('input:checked');
+      root.querySelectorAll('.opt').forEach(o=>{
+        if(+o.dataset.k===q.a) o.classList.add('correct');
+        else if(c && +o.dataset.k===+c.value) o.classList.add('wrong');
+      });
+      return {got:(c && +c.value===q.a)?1:0, answer:fmt(q.opts[q.a])};
+    }
+  },
+  match:{
+    max:q=>q.pairs.length,
+    html(q,i){
+      const rights = shuffle(q.pairs.map((p,k)=>[k,p[1]]));
+      const opts = `<option value="">– wybierz –</option>` + rights.map(([k,t])=>`<option value="${k}">${esc(t)}</option>`).join('');
+      return q.pairs.map((p,k)=>`<div class="row" data-k="${k}"><div class="lt">${fmt(p[0])}</div><select aria-label="${esc(p[0])}">${opts}</select></div>`).join('');
+    },
+    grade(q,root){
+      let got=0;
+      root.querySelectorAll('.row').forEach(r=>{
+        const k=+r.dataset.k, v=r.querySelector('select').value;
+        const ok = v!=='' && +v===k;
+        if(ok) got++;
+        r.querySelector('select').classList.add(ok?'mark-ok':'mark-bad');
+      });
+      return {got, answer:q.pairs.map(p=>fmt(p[0])+' → '+esc(p[1])).join('<br>')};
+    }
+  },
+  tf:{
+    max:q=>q.items.length,
+    html(q,i){
+      return q.items.map((it,k)=>`<div class="row tf" data-k="${k}"><div class="lt">${fmt(it[0])}</div><div><label><input type="radio" name="q${i}_${k}" value="p"> P</label><label><input type="radio" name="q${i}_${k}" value="f"> F</label></div></div>`).join('');
+    },
+    grade(q,root){
+      let got=0;
+      root.querySelectorAll('.row').forEach(r=>{
+        const it=q.items[+r.dataset.k], c=r.querySelector('input:checked');
+        const ok = c && (c.value==='p')===it[1];
+        if(ok) got++;
+        r.classList.add(ok?'mark-ok':'mark-bad');
+      });
+      return {got, answer:q.items.map((it,k)=>(k+1)+'. '+(it[1]?'P':'F')).join(' · ')};
+    }
+  },
+  order:{
+    max:q=>2,
+    html(q,i){
+      const n=q.steps.length;
+      const opts = `<option value="">–</option>` + Array.from({length:n},(_,k)=>`<option value="${k+1}">${k+1}</option>`).join('');
+      return shuffle(q.steps.map((s,k)=>[k,s])).map(([k,s])=>`<div class="row" data-k="${k}"><div class="lt">${fmt(s)}</div><select aria-label="Numer kroku">${opts}</select></div>`).join('');
+    },
+    grade(q,root){
+      let right=0;
+      root.querySelectorAll('.row').forEach(r=>{
+        const ok = +r.querySelector('select').value === +r.dataset.k+1;
+        if(ok) right++;
+        r.querySelector('select').classList.add(ok?'mark-ok':'mark-bad');
+      });
+      const got = right===q.steps.length ? 2 : (right>=2 ? 1 : 0);
+      return {got, answer:'<ol style="margin:4px 0 0 18px;padding:0">'+q.steps.map(s=>`<li>${fmt(s)}</li>`).join('')+'</ol>'};
+    }
+  },
+  fill:{
+    max:q=>1,
+    html(q,i){
+      return `<div class="fillline"><span>${fmt(q.q)}</span><input type="text" autocomplete="off" aria-label="Odpowiedź"><span class="small">${esc(q.after||'')}</span></div>`;
+    },
+    grade(q,root){
+      const inp=root.querySelector('input'), ok=q.accept.map(norm).includes(norm(inp.value));
+      inp.classList.add(ok?'mark-ok':'mark-bad');
+      return {got:ok?1:0, answer:esc(q.accept[0])};
+    }
+  },
+  multi:{
+    max:q=>2,
+    html(q,i){
+      return `<div class="opts">`+q.opts.map((o,k)=>`<label class="opt" data-k="${k}"><input type="checkbox" value="${k}"><span>${fmt(o[0])}</span></label>`).join('')+`</div>`;
+    },
+    grade(q,root){
+      let good=0;
+      root.querySelectorAll('.opt').forEach(o=>{
+        const k=+o.dataset.k, chk=o.querySelector('input').checked, should=q.opts[k][1];
+        if(chk===should) good++;
+        if(should) o.classList.add('correct'); else if(chk) o.classList.add('wrong');
+      });
+      const n=q.opts.length;
+      return {got: good===n?2:(good===n-1?1:0), answer:q.opts.filter(o=>o[1]).map(o=>fmt(o[0])).join('<br>')};
+    }
+  },
+  open:{
+    max:q=>0,
+    html(q,i){ return `<textarea aria-label="Twoja odpowiedź" placeholder="Wpisz odpowiedź…"></textarea>`; },
+    grade(q,root){ return {got:0, open:true, answer:fmt(q.model)}; }
+  }
+};
+
+/* ===== RENDER ===== */
+const form = document.getElementById('test');
+let cards = [];
+
+function render(){
+  form.innerHTML=''; cards=[];
+  document.getElementById('result').style.display='none';
+  let n=0;
+  Q.forEach((q,i)=>{
+    const b=B[q.t], max=b.max(q);
+    if(q.t!=='open') n++;
+    const sec=document.createElement('section');
+    sec.className='card q';
+    const head = q.t==='open'
+      ? `<h2><span class="n">Dodatkowe</span></h2>`
+      : `<h2><span class="n">Zadanie ${n}</span><span class="pts">${max} pkt.</span></h2>`;
+    const text = q.t==='fill' ? '' : `<p class="text">${fmt(q.q)}</p>`;
+    sec.innerHTML = head + text + b.html(q,i) + `<div class="fb"></div>`;
+    form.appendChild(sec);
+    cards.push(sec);
+  });
+}
+
+function check(){
+  let got=0, max=0;
+  Q.forEach((q,i)=>{
+    const b=B[q.t], sec=cards[i];
+    if(sec.classList.contains('done')) return;
+    const r=b.grade(q,sec);
+    const m=b.max(q);
+    got+=r.got; max+=m;
+    const fb=sec.querySelector('.fb');
+    let cls, head;
+    if(r.open){ cls='part'; head='<strong>Wzorcowa odpowiedź</strong>'; }
+    else if(r.got===m){ cls='ok'; head=`<strong>✔ ${r.got}/${m} pkt.</strong>`; }
+    else if(r.got>0){ cls='part'; head=`<strong>◐ ${r.got}/${m} pkt.</strong>`; }
+    else { cls='bad'; head=`<strong>✘ 0/${m} pkt.</strong>`; }
+    sec.classList.add('done',cls);
+    const showAns = r.open || r.got<m;
+    fb.innerHTML = head + (showAns ? `<br>${r.open?'':'Poprawna odpowiedź: '}${r.answer}` : '') + (q.why ? `<br><span class="small">${fmt(q.why)}</span>` : '');
+    sec.querySelectorAll('input,select,textarea').forEach(d=>d.disabled=true);
+  });
+  if(max===0) return;
+  const pct = Math.round(got/max*100);
+  const s = SKALA.find(x=>pct>=x.min);
+  const name = document.getElementById('imie').value.trim();
+  const res = document.getElementById('result');
+  res.innerHTML = `${name?`<div class="small">${esc(name)}</div>`:''}
+    <div class="big">Wynik: ${got} / ${max} pkt. (${pct}%)</div>
+    <div class="grade">${s.ocena}</div>
+    <div>ocena: <b>${s.nazwa}</b></div>
+    <p class="small noprint" style="margin:8px 0 0">Poniżej zobaczysz, co było dobrze, a co warto powtórzyć.</p>`;
+  res.style.display='block';
+  res.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+document.getElementById('btnCheck').onclick = () => {
+  if(cards.some(c=>c.classList.contains('done'))) return;
+  check();
+};
+document.getElementById('btnReset').onclick = () => { render(); window.scrollTo({top:0,behavior:'smooth'}); };
+document.getElementById('btnPrint').onclick = () => window.print();
+
+document.getElementById('data').value = new Date().toLocaleDateString('pl-PL');
+render();
+</script>
+</body>
+</html>
